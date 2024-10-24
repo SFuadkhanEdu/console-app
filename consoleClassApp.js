@@ -1,40 +1,3 @@
-// 1)  sinifler array i
-// 2)  muellimler arrayi
-// 3) sagirdler arrayi
-
-// sinif ornek obj  ={
-// teacher : {}
-// name:bp216
-// students:[
-// ]
-// }
-
-// 1- sinifler
-// 2- muellimler
-// 3- sagidrler
-// 4- cixis
-
-//  1)
-//    -1 - butun sinfleri goster
-//    0- sinif goster id ye gore
-//    1- sinif yarat
-//    2- sinif sil
-//    3- sinife telebe elave et
-//    4 - sinife muellim deyis
-//    5-  sinifin icindeki sagirdleri goster
-
-// 2 )
-//     1-  butun muellimler goster
-//     2- muellimler id ye gore goster
-//     3-  muellimler id ye gore sil
-//     4- muellimler guncelle
-
-// 3 )
-//     1-  butun sagidrler goster
-//     2- sagirdi id ye gore goster
-//     3-  sagirdi id ye gore sil
-//     4- sagirdi guncelle
-
 function generateID(subID) {
   return subID + (Math.random() * 10000).toFixed(0);
 }
@@ -260,6 +223,7 @@ let classes = [
       "ST1531",
       "ST1532",
     ],
+    teacher_id: "TC760",
   },
   {
     class_id: "CL102",
@@ -276,6 +240,7 @@ let classes = [
       "ST1541",
       "ST1542",
     ],
+    teacher_id: "TC761",
   },
   {
     class_id: "CL103",
@@ -292,6 +257,7 @@ let classes = [
       "ST1551",
       "ST1552",
     ],
+    teacher_id: "TC762",
   },
 ];
 let isRunning = true;
@@ -314,46 +280,144 @@ const text_students_menu = `Choose an option:
 3. delete by id
 4. update student
 5. main menu`;
+const text_classes_menu = `Choose an option:
+1. display all classes
+2. display class by ID
+3. create class
+4. delete class
+5. add student to class
+6. change teacher
+7. display all students in class`;
 while (isRunning) {
   input = prompt(text_main_menu);
   if (input === "4") {
     isRunning = false;
-  } 
-  else if (input === "3") {
+  } else if (input === "3") {
     input = prompt(text_teachers_menu);
     if (input === "1") {
       displayAllTeachers(teachers);
     } else if (input === "2") {
       let id = prompt("input id: ");
-      displayTeachersByID(teachers, id);
+      displayTeachersByID(id);
     } else if (input === "3") {
       let id = prompt("input id:");
       deleteTeacherByID(id);
     } else if (input === "4") {
       let id = prompt("input id:");
       updateTeacherByID(id);
-    } 
-  }
-  else if (input === "2") {
+    }
+  } else if (input === "2") {
     input = prompt(text_students_menu);
     if (input === "1") {
-        displayAllStudents(students);
-      } else if (input === "2") {
-        let id = prompt("input id: ");
-        displayStudentByID(students, id);
-      } else if (input === "3") {
-        let id = prompt("input id:");
-        deleteStudentByID(id);
-      } else if (input === "4") {
-        let id = prompt("input id:");
-        updateStudentByID(id);
-      } 
+      displayAllStudents(students);
+    } else if (input === "2") {
+      let id = prompt("input id: ");
+      displayStudentByID(id);
+    } else if (input === "3") {
+      let id = prompt("input id:");
+      deleteStudentByID(id);
+    } else if (input === "4") {
+      let id = prompt("input id:");
+      updateStudentByID(id);
+    }
+  } else if (input === "1") {
+    input = prompt(text_classes_menu);
+    if (input === "1") {
+      displayAllClasses();
+    } else if (input === "2") {
+      let id = prompt("input id");
+      displayClassByID(id);
+    } else if (input === "3") {
+      addClass();
+    } else if (input === "4") {
+      let id = prompt("input id");
+      deleteClassByID(id);
+    } else if (input === "5") {
+      let class_id = prompt("input class id");
+      let student_id = prompt("input student id");
+      addStudentToClass(class_id, student_id);
+    } else if (input === "6") {
+      let class_id = prompt("input class id");
+      let teacher_id = prompt("input teacher id");
+      changeTeacherInClass(class_id, teacher_id);
+    } else if (input === "7") {
+      let class_id = prompt("input class id");
+      displayAllStudentsInClass(class_id);
+    }
   }
 }
 
+function getClassByID(id) {
+  let classesFound = classes.find((a) => a.class_id === id);
+  return classesFound ? classesFound : alert("NO SUCH CLASS");
+}
+function displayAllClasses() {
+  let i = 1;
+  let resultArr = [];
+  classes.forEach((element) => {
+    resultArr.push(
+      i++ + " - " + element.class_id + " - " + element.number + "   "
+    );
+  });
+  alert(resultArr);
+}
+function displayClassByID(id) {
+  let classFound = getClassByID(id);
+  if (classFound) {
+    alert(Object.entries(classFound));
+  }
+}
+function addClass() {
+  let classCreated = [];
+  classCreated.class_id = generateID("CL");
+  input = prompt("input one by one: class_id, {number}, student_id");
+  classCreated.number = input;
+  input = prompt("input one by one: class_id, number, {student_id}");
+  classCreated.student_id = input;
+  classes.push(classCreated);
+  console.table(classes);
+}
+function deleteClassByID(id) {
+  classes = classes.filter((a) => a.class_id !== id);
+}
+function addStudentToClass(class_id, student_id) {
+  let classFound = getClassByID(class_id);
+  if (classFound) {
+    let studentFound = getStudentFromClass(classFound, student_id);
+    if (!studentFound) {
+      classFound.students_id.push(student_id);
+    }
+  }
+  // classes.find((a) => a.class_id === class_id).students_id.push(student_id);
+}
+function changeTeacherInClass(class_id, teacher_id) {
+  classFound = getClassByID(class_id);
+  teacherFound = getTeacherByID(teacher_id);
+  if (classFound && teacherFound) {
+    classFound.teacher_id = teacher_id;
+  }
+  // classes.find((a) => a.class_id === class_id).teacher_id = teacher_id;
+}
+function displayAllStudentsInClass(class_id) {
+  let class_found = getClassByID(class_id);
+  if (class_found) {
+    const result_arr = class_found.students_id
+      .map((student_id) => {
+        const student = students.find(
+          (student) => student.student_id === student_id
+        );
+        return student
+          ? `${student.student_id} - ${student.name} ${student.surname}`
+          : null;
+      })
+      .filter((student) => student !== null);
+    alert(result_arr.join(""));
+  }
+}
 
 function getTeacherByID(id) {
-  return teachers.find((a) => a.teacher_id === id);
+  let teacherFound = teachers.find(a => a.teacher_id === id);
+  return teacherFound ? teacherFound : alert("NO SUCH TEACHER");
 }
 function displayAllTeachers(teachers) {
   let i = 1;
@@ -366,7 +430,10 @@ function displayAllTeachers(teachers) {
   alert(resultArr);
 }
 function displayTeachersByID(id) {
-  alert(Object.entries(getTeacherByID(id)));
+  teacherFound = getTeacherByID(id);
+  if (teacherFound) {
+    alert(Object.entries(teacherFound));
+  }
 }
 function deleteTeacherByID(id) {
   teachers = teachers.filter((a) => a.teacher_id != id);
@@ -374,55 +441,91 @@ function deleteTeacherByID(id) {
 }
 function updateTeacherByID(id) {
   let teacher = getTeacherByID(id);
-  teachers = teachers.filter((a) => a.teacher_id !== id);
-  input = prompt("input one by one: {id}, name, surname, salary");
-  teacher.teacher_id = input;
+  if (!teacher) {
+    alert("UPDATE METHOD WILL WORK AS ADD TO CANCEL INPUT 'CANCEL' ");
+    teacher = []
+    teacher.teacher_id = generateID("TC")
+  }
+  else{
+    teachers = teachers.filter((a) => a.teacher_id !== id);
+  }
   input = prompt("input one by one: id, {name}, surname, salary");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
   teacher.name = input;
   input = prompt("input one by one: id, name, {surname}, salary");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
   teacher.surname = input;
   input = prompt("input one by one: id, name, surname, {salary}");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
   teacher.salary = input;
   teachers.push(teacher);
   console.table(teachers);
 }
 
-
+function getStudentFromClass(classFound, id) {
+  studentFound = classFound.students_id.includes(id);
+  if (studentFound) {
+    alert("ALREADY SUCH STUDENT EXISTS");
+    return studentFound;
+  }
+}
 function getStudentByID(id) {
-    return students.find((a) => a.student_id === id);
+  let studentFound;
+  studentFound = students.find((a) => a.student_id === id);
+
+  return studentFound ? studentFound : alert("NO SUCH STUDENT");
 }
 function displayAllStudents(students) {
-    let i = 1;
-    let resultArr = [];
-    students.forEach((element) => {
-      resultArr.push(
-        i++ + " - " + element.student_id + " - " + element.name + "   "
-      );
-    });
-    alert(resultArr);
+  let i = 1;
+  let resultArr = [];
+  students.forEach((element) => {
+    resultArr.push(
+      i++ + " - " + element.student_id + " - " + element.name + "   "
+    );
+  });
+  alert(resultArr);
 }
-function displayStudentsByID(id) {
-    alert(Object.entries(getStudentByID(id)));
+function displayStudentByID(id) {
+  let studentFound = getStudentByID(id);
+  if (studentFound) {
+    alert(Object.entries(studentFound));
+  }
 }
 function deleteStudentByID(id) {
-    students = students.filter((a) => a.student_id != id);
-    console.table(students);
+  students = students.filter((a) => a.student_id != id);
+  console.table(students);
 }
 function updateStudentByID(id) {
-    let student = getStudentByID(id);
+  let student = getStudentByID(id);
+  if (!student) {
+    alert("UPDATE METHOD WILL WORK AS ADD TO CANCEL INPUT 'CANCEL' ");
+    student = []
+    student.student_id = generateID("ST");
+  }
+  else{
     students = students.filter((a) => a.student_id !== id);
-    input = prompt("input one by one: {id}, name, surname, teacher_id");
-    student.student_id = input;
-    input = prompt("input one by one: id, {name}, surname, teacher_id");
-    student.name = input;
-    input = prompt("input one by one: id, name, {surname}, teacher_id");
-    student.surname = input;
-    input = prompt("input one by one: id, name, surname, {teacher_id}");
-    student.salary = input;
-    students.push(student);
-    console.table(students);
-}  
-// displayAllTeachers(teachers);
-console.table(teachers);
-displayStudentsByID("ST1523")
-getStudentByID("ST1523")
+  }
+  input = prompt("input one by one: id, {name}, surname, teacher_id");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
+  student.name = input;
+  input = prompt("input one by one: id, name, {surname}, teacher_id");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
+  student.surname = input;
+  input = prompt("input one by one: id, name, surname, {teacher_id}");
+  if (input.toLowerCase() === "cancel") {
+    return;
+  }
+  student.teacher_id = input;
+  students.push(student);
+  console.table(students);
+}
